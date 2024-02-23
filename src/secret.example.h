@@ -5,5 +5,8 @@
  *   --> Use this file as a template and replace the placeholders with your own data
  *  
  */
-#define WIFI_SSID="your_ssid"
-#define WIFI_PASS="your_password"
+#define WIFI_SSID "your_ssid"
+#define WIFI_PASSWORD "your_password"
+
+#define MQTT_SERVER IPaddress(91, 121, 93, 94) // IP address of https://test.mosquitto.org
+#define MQTT_PORT 1883 // MQTT, unencrypted, unauthenticated

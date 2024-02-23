@@ -5,7 +5,6 @@
  *   --> Use this file as a template and replace the placeholders with your own data
  *  
  */
-#include <WiFi.h>
 
 #define WIFI_SSID "your_ssid"
 #define WIFI_PASSWORD "your_password"

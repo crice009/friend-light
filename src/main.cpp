@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <secret.h>
+#include "../lib/secret.h"
 
 /*
 This example uses FreeRTOS softwaretimers as there is no built-in Ticker library
@@ -13,16 +13,13 @@ extern "C" {
 }
 #include <AsyncMqttClient.h>
 
-#define MQTT_HOST IPAddress(192, 168, 1, 10)
-#define MQTT_PORT 1883
-
 AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(SECRET_WIFI_SSID, SECRET_WIFI_PASSWORD);
 }
 
 void connectToMqtt() {
@@ -126,7 +123,7 @@ void setup() {
   mqttClient.onUnsubscribe(onMqttUnsubscribe);
   mqttClient.onMessage(onMqttMessage);
   mqttClient.onPublish(onMqttPublish);
-  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
+  mqttClient.setServer(SECRET_MQTT_SERVER, SECRET_MQTT_PORT);
 
   connectToWifi();
 }

@@ -51,6 +51,9 @@ void onMqttConnect(bool sessionPresent) {
   uint16_t packetIdSub = mqttClient.subscribe("test/lol", 2);
   Serial.print("Subscribing at QoS 2, packetId: ");
   Serial.println(packetIdSub);
+  uint16_t packetIdSubColor = mqttClient.subscribe("test/lol/color", 2);
+  Serial.print("Subscribing at QoS 2, packetId: ");
+  Serial.println(packetIdSubColor);
   mqttClient.publish("test/lol", 0, true, "test 1");
   Serial.println("Publishing at QoS 0");
   uint16_t packetIdPub1 = mqttClient.publish("test/lol", 1, true, "test 2");
@@ -83,22 +86,58 @@ void onMqttUnsubscribe(uint16_t packetId) {
   Serial.println(packetId);
 }
 
+#include <cstring>
+
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-  Serial.println("Publish received.");
+  Serial.println("Message received.");
   Serial.print("  topic: ");
   Serial.println(topic);
-  Serial.print("  qos: ");
-  Serial.println(properties.qos);
-  Serial.print("  dup: ");
-  Serial.println(properties.dup);
-  Serial.print("  retain: ");
-  Serial.println(properties.retain);
-  Serial.print("  len: ");
-  Serial.println(len);
-  Serial.print("  index: ");
-  Serial.println(index);
-  Serial.print("  total: ");
-  Serial.println(total);
+  Serial.print("  payload: ");
+  Serial.println(payload);
+
+  // Check if the topic is the color topic
+  if (strcmp(topic, "test/lol/color") != 0) {
+    return;
+  }
+
+  Serial.println("message is in color category.");
+
+  
+  // Check if the payload is a valid hex color code
+  size_t payloadLen = strlen(payload);
+  // Check if the payload is a valid hex color code
+  bool isValidHex = true;
+  for (size_t i = 0; i < payloadLen; i++) {
+    if (!isxdigit(payload[i])) {
+      isValidHex = false;
+      break;
+    }
+  }
+
+  // Return the color code, if valid or a default color
+  const char * hexColor = "000000";
+  if (isValidHex) {
+    hexColor = payload;
+  }
+
+  char r[3] = {hexColor[0], hexColor[1], '\0'};
+  char g[3] = {hexColor[2], hexColor[3], '\0'};
+  char b[3] = {hexColor[4], hexColor[5], '\0'};
+
+  int rgb[3];
+  rgb[0] = strtol(r, NULL, 16);
+  rgb[1] = strtol(g, NULL, 16);
+  rgb[2] = strtol(b, NULL, 16);
+
+  Serial.print("  r: ");
+  Serial.println(rgb[0]);
+  Serial.print("  g: ");
+  Serial.println(rgb[1]);
+  Serial.print("  b: ");
+  Serial.println(rgb[2]);
+  #ifdef RGB_BUILTIN
+  neopixelWrite(RGB_BUILTIN,rgb[0],rgb[1],rgb[2]);
+  #endif
 }
 
 void onMqttPublish(uint16_t packetId) {
